@@ -13,15 +13,77 @@
 								<%= @book.user.name %>
 								<% end %>
 							</td>
-							<td><%= link_to @book.title,book_path(@book.id) %></td>
-							<td><%= @book.body %></td>
+							<td>
+								<%= link_to @book.title,book_path(@book.id) %>		
+							</td>
+							<td>
+								<%= @book.body %>
+							</td>
+							<td>
+							<% if @book.favorited_by?(current_user) %>
+								    <%= link_to book_favorites_path(@book), method: :delete do %>
+								    <i class="glyphicon glyphicon-heart" aria-hidden="true" style="color: black;"></i>
+								    <%= @book.favorites.count %> 
+								    <% end %>
+								<% else %>
+								    <%= link_to book_favorites_path(@book), method: :post do %>
+								    <i class="glyphicon glyphicon-heart-empty" aria-hidden="true"></i>
+								    <%= @book.favorites.count %> 
+								    <% end %>
+							<% end %>
+							</td>
+
+
+
+							<td>
+									 <%= link_to "コメント数:#{@book.book_comments.count}", book_path(@book.id) %>
+							</td>
+
+
+
 							<% if current_user.id == @book.user.id %>
-							<td><%= link_to "Edit", edit_book_path(@book.id), class: "btn btn-success" %></td>
-							<td><%= link_to "Destroy", book_path(@book), class: "btn btn-danger", method: :delete, data: { confirm: '本当に消しますか？' } %></td>
+							<td><%= link_to "Edit", edit_book_path(@book.id), class: "btn btn-success" %>
+							</td>
+							<td><%= link_to "Destroy", book_path(@book), class: "btn btn-danger", method: :delete, data: { confirm: '本当に消しますか？' } %>
+							</td>
 							<% end %>
 						</tr>
 					</tbody>
 				</table>
+		</div>
+		<div class="col-xs-7">
+				<%= form_for @book_comment ,url: book_comments_path(book_id: @book.id) do |f| %>
+
+				<div class="row">
+					<div class="col-sm-12">
+					<%= f.text_area :comment, rows:'5', class: "form-control" %>
+					</div>
+				</div>
+				<%= f.submit "送信", class: "btn btn-lg btn-base-1 mt-20 pull-right" %>
+				<% end %>
+
+				<div class="row">
+					<div class="col-sm-12">
+					<ol>
+					    <% @book.book_comments.each do |book_comment| %>
+					        <li class="comment">
+					            <div class="comment-body bb">
+					                <div class="comment-text">
+					                    <div class="comment-author clearfix">
+					                    	<a href="#" class="link-author"><%= book_comment.user.name %></a>
+					                    <div class="comment-entry"><%= book_comment.comment %></div>
+					                    <% if book_comment.user == current_user%>
+										  <div>
+										    <%= link_to "削除", book_comments_path(id: book_comment.id), method: :delete, class: "btn btn-danger pull-right" %>
+										  </div>
+										<% end %>
+					                </div>
+					            </div>
+					        </li>
+					    <% end %>
+					</ol>
+					</div>
+				</div>	
 		</div>
 	</div>
 </div>
